@@ -44,6 +44,8 @@ public class Canvas extends JPanel implements MouseMotionListener, MouseWheelLis
     //Einteilung für das Raster
     private final double divisor = 10;
 
+    private boolean showGrid = false;
+
     Canvas() {
         //MouseListener für vergrößern, verkleinern und verschieben.
         this.addMouseMotionListener(this);
@@ -117,7 +119,7 @@ public class Canvas extends JPanel implements MouseMotionListener, MouseWheelLis
         super.paintComponent(gr);
         Graphics2D g = (Graphics2D) gr;
         //Die Raster Linien werden gezeichnet
-        if (Main.useGrid.isSelected()) {
+        if (showGrid) {
             g.setColor(Color.lightGray);
             double xStep = this.getSize().getWidth() / divisor;
             double yStep = this.getSize().getHeight() / divisor;
@@ -331,6 +333,7 @@ public class Canvas extends JPanel implements MouseMotionListener, MouseWheelLis
         list.clear();
         preObject = null;
         shapeList.clear();
+        repaint();
     }
 
     private void removeRect(MouseEvent e) {
@@ -348,6 +351,7 @@ public class Canvas extends JPanel implements MouseMotionListener, MouseWheelLis
 
     public void addItem(Moebel moebel) {
         list.add(moebel);
+        repaint();
     }
 
     public ArrayList<Moebel> getList() {
@@ -364,5 +368,10 @@ public class Canvas extends JPanel implements MouseMotionListener, MouseWheelLis
 
     public void setShapeList(ArrayList<Shape> shapeList) {
         this.shapeList = shapeList;
+    }
+
+    public void toggleGrid() {
+        showGrid = !showGrid;
+        repaint();
     }
 }

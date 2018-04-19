@@ -9,15 +9,16 @@ public class Main extends JFrame {
 
     private Canvas canvas;
 
-    private JPanel panel = new JPanel();
-    private JPanel p = getPanel();
-    static JCheckBox useGrid = new JCheckBox("Raster anzeigen");
-    static final int width = 800;
-    static final int height = 800;
+    private JPanel templatePanel = new JPanel();
+    private JCheckBox useGrid = new JCheckBox("Raster anzeigen");
+    final static int width = 800;
+    final static int height = 800;
     //Map für eigene Templates
-    private static Map<String, ArrayList<Moebel>> templateList = new HashMap<>();
-    private ArrayList<ArrayList> editList = new ArrayList<>();
+    private Map<String, ArrayList<Moebel>> templateList = new HashMap<>();
+    private ArrayList<Moebel> tempList = new ArrayList<>();
+    private ArrayList<Shape> tempShapeList = new ArrayList<>();
     private JTextField field = new JTextField();
+    private JPanel p = getPanel();
 
     private Main() {
         super("Leinwand");
@@ -33,23 +34,26 @@ public class Main extends JFrame {
             p.removeAll();
             p.add(getPanel());
             canvas.reset();
-            canvas.setList(editList.get(0));
-            canvas.setShapeList(editList.get(1));
-            editList.clear();
-            panel.setVisible(false);
+            canvas.setList(new ArrayList<>(tempList));
+            canvas.setShapeList(new ArrayList<>(tempShapeList));
+            tempList.clear();
+            tempShapeList.clear();
+            templatePanel.setVisible(false);
         });
-        panel.add(field);
-        panel.add(button);
-        panel.setVisible(false);
-        add(panel, BorderLayout.SOUTH);
+        templatePanel.add(field);
+        templatePanel.add(button);
+        templatePanel.setVisible(false);
+        add(templatePanel, BorderLayout.SOUTH);
+        getRootPane().setDefaultButton(button);
         setResizable(false);
         setSize(width, height);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        setVisible(true);
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new Main().setVisible(true));
+        new Main();
     }
 
     private JPanel getPanel() {
@@ -59,10 +63,7 @@ public class Main extends JFrame {
                 new JButton("Tisch"), new JButton("Waschmaschine"), new JButton("Reset"), new JButton("Neue Gruppe")));
         templateList.forEach((key, value) -> {
             JButton b = new JButton(key);
-            b.addActionListener(e -> {
-                //for (Moebel m: value) Canvas.list.add(m.clone());
-            });
-            //b.addActionListener(e -> Canvas.list.addAll((ArrayList<Moebel>)value.clone()));
+            b.addActionListener(e -> value.forEach(canvas::addItem));
             buttons.add(b);
         });
         GridBagConstraints c = new GridBagConstraints();
@@ -87,14 +88,14 @@ public class Main extends JFrame {
         buttons.get(6).addActionListener(e -> canvas.addItem(new Waschmaschine()));
         buttons.get(7).addActionListener(e -> canvas.reset());
         buttons.get(8).addActionListener(e -> {
-            editList.add(new ArrayList<>(canvas.getList()));
-            editList.add(new ArrayList<>(canvas.getShapeList()));
+            tempList = new ArrayList<>(canvas.getList());
+            tempShapeList = new ArrayList<>(canvas.getShapeList());
             canvas.reset();
             field.grabFocus();
             field.requestFocus();
-            panel.setVisible(true);
+            templatePanel.setVisible(true);
         });
-        buttons.forEach(e -> e.addActionListener(x -> canvas.updateView()));
+        useGrid.addActionListener(e -> canvas.toggleGrid());
         return pan;
     }
 }
