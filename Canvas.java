@@ -7,6 +7,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Objects;
 
 /**
@@ -77,7 +78,6 @@ public class Canvas extends JPanel implements MouseMotionListener, MouseWheelLis
                     for (int i = 0; i < list.size(); i++) {
                         if (currentRect.contains(list.get(i).getX(), list.get(i).getY())) {
                             list.set(i, null);
-                            repaint();
                         }
                     }
                 } else if (e.isShiftDown()) list.remove(currentObject);
@@ -255,10 +255,15 @@ public class Canvas extends JPanel implements MouseMotionListener, MouseWheelLis
     }
 
     private Color colorCode(char c) {
-        char[] array = {'r', 'b', 'y', 'g', 'p', 'w'};
-        Color[] array2 = {Color.red, Color.blue, Color.yellow, Color.green, Color.magenta, Color.white};
-        for (int i = 0; i < array.length; i++)
-            if (c == array[i]) return array2[i];
+        HashMap<Character, Color> colorMap = new HashMap<Character, Color>() {{
+            put('r', Color.red);
+            put('b', Color.blue);
+            put('y', Color.yellow);
+            put('g', Color.green);
+            put('p', Color.magenta);
+            put('w', Color.white);
+        }};
+        if (colorMap.containsKey(c)) return colorMap.get(c);
         return Color.black;
     }
 
